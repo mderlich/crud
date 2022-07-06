@@ -25,7 +25,7 @@
 					</div>
 					<div class="col-12 col-md-6">
 						<label for="price" class="form-label">Precio del producto:</label>
-						<input type="text" id="price" name="price" placeholder="Ej: 5678" class="form-input" value="<%= productDetail.price %>">
+						<input type="number" id="price" name="price" placeholder="Ej: 5678" class="form-input" value="<%= productDetail.price %>">
 					</div>
 					<div class="col-12 col-md-6">
 						<label for="discount" class="form-label">Descuento:</label>
@@ -52,6 +52,12 @@
 							<option value="visited" <%= visitedSelected %>>Últimos agregados</option>
 						</select>
 					</div>
+
+					<div class="col-12">
+						<label for="image" class="form-label">Imagen:</label>
+						<input type="file" name="image" id="image" >
+					</div>
+					
 					<div class="col-12">
 						<label for="description" class="form-label">Descipción:</label>
 						<textarea name="description" id="description" class="form-input"><%= productDetail.description %></textarea>
