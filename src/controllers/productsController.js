@@ -1,6 +1,7 @@
 // fs requerido para JSON
 const fs = require('fs');
 const path = require('path');
+const { CLIENT_RENEG_LIMIT } = require('tls');
 
 
 /* 
@@ -40,17 +41,12 @@ const controller = {
 		const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 		
 		// Do the magic
-        const productId = parseInt(req.params.id, 10);
-        let productDetail; 
+        let productId = parseInt(req.params.id);
 
-        for (let i = 0; i < products.length; i++) {
-            if ( products[i].id === productId ) {
-                // acá lo encontramos al producto
-                productDetail = products[i];
-            }
-        }
+		// busqueda en pocas lineas... (prod == producto)
+		let productIndice = products.findIndex( prod => prod.id == productId );
+		let productDetail = products[productIndice];
 
-		
         // si existe...
         if (productDetail){
             res.render( "detail",  {productDetail: productDetail} );
@@ -58,7 +54,7 @@ const controller = {
 		// si no hay producto...
         else {
 			res.status(404).render( "error",  {
-				message: 'Producto no encontrado',
+				message: 'Producto no encontrado' + productDetail,
 			} );
         }
 
@@ -74,17 +70,12 @@ const controller = {
 		const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 
 		// Do the magic
-        const productId = parseInt(req.params.id, 10);
-        let productDetail; 
+        const productId = parseInt(req.params.id);
 
-        for (let i = 0; i < products.length; i++) {
-            if ( products[i].id === productId ) {
-                // acá lo encontramos al producto
-                productDetail = products[i];
-            }
-        }
+		// busqueda en pocas lineas... (prod == producto)
+		let productIndice = products.findIndex( prod => prod.id == productId );
+		let productDetail = products[productIndice];
 
-		
         // si existe...
         if (productDetail){
 			res.status(201).send(productDetail); 
@@ -119,6 +110,19 @@ const controller = {
 		const productsFilePath = path.join(__dirname, '../data/productsDataBase.json');
 		const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 
+		// Imagen (inicio) ----------------
+		// chequeamos si la imagen fue cargada
+		if(req.file){
+			// 'filename' esta indicado como llega desde el multer en el ruteador de products...
+			// filename: 'ximg-1657115263090',
+			rutaFoto = req.file.filename;
+		}
+		// si no hay, ponemos una por default
+		else{
+			rutaFoto = 'default-image.png';
+		}
+		// imagen (fin) --------------------
+
 		// Do the magic
 		let nuevoProducto = {
 			// para el id, buscamos el maximo valor y le sumamos 1
@@ -128,9 +132,7 @@ const controller = {
 			price: parseInt(req.body.price), 		// <= debe ser numero!
 			discount: parseInt(req.body.discount),	// <= debe ser numero!
 			category: req.body.category,
-			// 'filename' esta indicado como llega desde el multer en el ruteador de products...
-			// filename: 'ximg-1657115263090',
-			image: req.file.filename
+			image: rutaFoto			
 		}
 
 		// anexamos el nuevo dato...
@@ -151,15 +153,13 @@ const controller = {
 		const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 
 		// Do the magic
-        const productId = parseInt(req.params.id, 10);
-        let productDetail; 
+        const productId = parseInt(req.params.id);
 
-        for (let i = 0; i < products.length; i++) {
-            if ( products[i].id === productId ) {
-                // acá lo encontramos al producto
-                productDetail = products[i];
-            }
-        }
+
+		// busqueda en pocas lineas... (prod == producto)
+		let productIndice = products.findIndex( prod => prod.id == productId );
+		let productDetail = products[productIndice];
+
 
         // si existe...
         if (productDetail){
@@ -189,25 +189,35 @@ const controller = {
 		const productsFilePath = path.join(__dirname, '../data/productsDataBase.json');
 		const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 
-        const productId = parseInt(req.params.id, 10);
 
-        for (let i = 0 ; i < products.length ; i++) {
-            if ( products[i].id === productId ) {
-                // acá lo encontramos al producto
-				products[i]['name'] = req.body.name;
-				products[i]['price'] = req.body.price;
-				products[i]['discount'] = req.body.discount;
-				products[i]['category'] = req.body.category;
-				products[i]['description'] = req.body.description;
-				// 'filename' esta indicado como llega desde el multer en el ruteador de products...
-				// filename: 'ximg-1657115263090',
+		// Imagen (inicio) ----------------
+		// chequeamos si la imagen fue cargada
+		if(req.file){
+			// 'filename' esta indicado como llega desde el multer en el ruteador de products...
+			// filename: 'ximg-1657115263090',
+			rutaFoto = req.file.filename;
+		}
+		// si no hay, ponemos una por default
+		else{
+			rutaFoto = 'default-image.png';
+		}
+		// imagen (fin) --------------------
+
+
+        const productId = parseInt(req.params.id);
+
+		// busqueda en pocas lineas... (prod == producto)
+		let productIndice = products.findIndex( prod => prod.id == productId );
+		//let productDetail = products[productIndice];
+
+		// acá lo encontramos al producto
+		products[productIndice]['name'] = req.body.name;
+		products[productIndice]['price'] = req.body.price;
+		products[productIndice]['discount'] = req.body.discount;
+		products[productIndice]['category'] = req.body.category;
+		products[productIndice]['description'] = req.body.description;
+		products[productIndice]['image'] = rutaFoto;
 	
-				
-            }
-        }
-
-
-		
 
 		// guardamos los datos...
 		let productsGuardar = JSON.stringify(products,null,4);
@@ -223,12 +233,16 @@ const controller = {
 		const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 		
 		// Do the magic
-		const productId = parseInt(req.params.id, 10);
+		const productId = parseInt(req.params.id);
+
+
 		// filtramos los que tengan id distinto al que buscamos...
 		const productsFinal = products.filter(prod => prod.id != productId);        
 		// guardamos...
 		let productsGuardar = JSON.stringify(productsFinal,null,4);
 		fs.writeFileSync(path.resolve(__dirname, '../data/productsDataBase.json'),productsGuardar);
+
+
 		res.redirect('/products');
 		
 	}

@@ -52,7 +52,7 @@ router.post('/', upload.single('image'), store);        /* <<============= */
 
 /*** EDIT ONE PRODUCT ***/ 
 router.get('/edit/:id', edit); 
-router.put('/:id', update);     /* <<============= */
+router.put('/:id', upload.single('image'), update);     /* <<============= */
 
 /*** DELETE ONE PRODUCT***/ 
 router.delete('/:id', destroy); /* <<============= */
